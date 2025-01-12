@@ -8,6 +8,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
+//Creating a class
 class Task {
   String taskTitle;
   bool isDone;
@@ -68,14 +69,17 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+//Empty List for Tasks
   List<Task> taskList = [];
 
+//Function to delete all tasks
   void deleteAllTask() {
     setState(() {
       taskList.clear();
     });
   }
 
+//Function to add tasks
   void addTask() {
     if (userInput.text.isNotEmpty) {
       taskList.add(
@@ -107,11 +111,15 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: Size.fromHeight(140),
         child: AppBar(
           backgroundColor: appbarBgColor,
-          flexibleSpace: Padding(
-            padding: const EdgeInsets.all(12),
+          title: Padding(
+            padding: EdgeInsets.only(
+              top: 20,
+              left: 10,
+              right: 10,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -128,6 +136,20 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
           ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(30),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Search Your Tasks",
+                  suffixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       body: Column(
@@ -142,7 +164,7 @@ class _MainPageState extends State<MainPage> {
                   title: Text(
                     taskList[index].taskTitle,
                     style: TextStyle(
-                      color: grey,
+                      color: taskList[index].isDone ? green : grey,
                       decoration: taskList[index].isDone
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
