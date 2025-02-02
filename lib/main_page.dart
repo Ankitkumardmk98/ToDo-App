@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'constant.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -22,21 +23,54 @@ class Task {
 class _MainPageState extends State<MainPage> {
   TextEditingController userInput = TextEditingController();
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  void initNotifications() {
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings settings =
+        const InitializationSettings(android: androidSettings);
+
+    flutterLocalNotificationsPlugin.initialize(settings);
+  }
+
+  Future<void> showNotification(String taskTitle) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'task_channel',
+      'Task Notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'New Task Added',
+      taskTitle,
+      notificationDetails,
+    );
+  }
+
 // Function to show the alert
   void _showAlert(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete All"),
-          content: Text("Do You want to delete all your tasks?"),
-          actions: [
+          title: const Text("Delete All"),
+          content: const Text("Do You want to delete all your tasks?"),
+          actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 deleteAllTask();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text(
                       "All Tasks are cleared now",
                       style: TextStyle(
@@ -50,7 +84,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 );
               },
-              child: Text(
+              child: const Text(
                 "Yes",
                 style: TextStyle(
                   color: red,
@@ -61,7 +95,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("No"),
+              child: const Text("No"),
             ),
           ],
         );
@@ -70,7 +104,7 @@ class _MainPageState extends State<MainPage> {
   }
 
 //Empty List for Tasks
-  List<Task> taskList = [];
+  List<Task> taskList = <Task>[];
 
 //Function to delete all tasks
   void deleteAllTask() {
@@ -86,11 +120,12 @@ class _MainPageState extends State<MainPage> {
         Task(taskTitle: userInput.text),
       );
       setState(() {
+        showNotification(userInput.text);
         userInput.clear();
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(
             "Please add any task",
             style: TextStyle(
@@ -107,23 +142,29 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    initNotifications();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(140),
+        preferredSize: const Size.fromHeight(140),
         child: AppBar(
           backgroundColor: appbarBgColor,
           title: Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               top: 20,
               left: 10,
               right: 10,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
+              children: <Widget>[
+                const Text(
                   "ToDo App",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
@@ -131,19 +172,19 @@ class _MainPageState extends State<MainPage> {
                   onPressed: () {
                     _showAlert(context);
                   },
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                 ),
               ],
             ),
           ),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(30),
+            preferredSize: const Size.fromHeight(30),
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: TextField(
                 decoration: InputDecoration(
                   hintText: "Search Your Tasks",
-                  suffixIcon: Icon(Icons.search),
+                  suffixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30)),
                 ),
@@ -153,9 +194,8 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(height: 20),
+        children: <Widget>[
+          const SizedBox(height: 20),
           Expanded(
             child: ListView.builder(
               itemCount: taskList.length,
@@ -187,20 +227,20 @@ class _MainPageState extends State<MainPage> {
               },
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Row(
-          children: [
+          children: <Widget>[
             Expanded(
               child: TextField(
-                style: TextStyle(color: grey),
+                style: const TextStyle(color: grey),
                 controller: userInput,
                 decoration: InputDecoration(
                   hintText: "Add Your Task",
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                     color: grey,
                   ),
                   border: OutlineInputBorder(
@@ -211,7 +251,7 @@ class _MainPageState extends State<MainPage> {
             ),
             IconButton(
               onPressed: addTask,
-              icon: Icon(
+              icon: const Icon(
                 Icons.add,
                 color: grey,
               ),
